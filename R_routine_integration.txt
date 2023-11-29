@@ -1,19 +1,10 @@
 library(geomorph)
-library(ape)
 library(Morpho)
 library(shapes)
-library(factoextra)
-library("dplyr")                                                
-library("plyr")                                               
-library("readr")  
-library(reshape2)
-library(missMDA)
-
-setwd("repertory")
 
 #LOAD DATA
-data<-read.csv(".csv file with all variables in columns and all individuals in rows")
-data_allo<-read.csv(".csv file with all variables, with allometry corrected, in columns and all individuals in rows")
+data<-read.csv2("ProcrustesCoords_PCscores_CSG.csv)# file with all variables in columns and all individuals in rows
+data_allo<-read.csv("AlloResiduals_rPCscores_CSG.csv)# file with all variables, with allometry corrected, in columns and all individuals in rows
 dim(data)
 
 ##COVARIATION
@@ -28,25 +19,23 @@ Hs<-subset(data[data$species == "sapiens",])
 Bab<-subset(data[data$species == "anubis",])
 Pan<-subset(data[data$Genera == "Pan",])
 
-art<-rbind(Hs,Pan,Bab)
 #Identification of variable (columns) of interest for example CSGp or procrust coordinates
 
-#classifiers<-data[1:4]
-#femurLM<-data[5:865]
-#pelvisLM<-data[866:1768]
-#PCA<-data[1769:1829]
-#IxIy<-data[1830:1890]
-#ImaxImin<-data[1891:1951]
-#femur_PCscores<-data[3538:3542]
-#pelvis_PCscores<-data[3543:3547]
+classifiers<-data[1:4]
+femurProc<-data[5:865] #Procrustes coordinates (or allometric residuals) of the femur
+pelvisProc<-data[866:1768] #Procrustes coordinates (or allometric residuals) of the pelvis
+femurPCscores<-data[1769:1773] 
+pelvisPCscores<-data[1774:1778]
+IxIy<-data[1779:1839]
+ImaxImin<-data[1840:1900]
 
 ##MORPHOLOGICAL INTEGRATION (GMM data femur vs GMM data pelvis)
 #Covariance Ratio for matrix of n obs. of k variable
 
 parameter1<-data[5:865] 
-#[5:865] represent femoral xyz coordintaes
+#[5:865] represent femoral xyz Procrustes coordintaes
 parameter2<-data[866:1768]
-#[866:1768] represent pelvic xyz coordintaes
+#[866:1768] represent pelvic xyz Procrustes coordintaes
 parameter<-cbind(parameter1,parameter2)
 
 dim(parameter1)
@@ -57,12 +46,12 @@ land.gps<-rep('a',1764);land.gps[862:1764]<-'b'
 
 CR<-modularity.test(parameter, land.gps, iter=999, CI = TRUE, print.progress = FALSE)
 CR                                
-MTHs #for humans
-MTBab #for baboons
-MTPan #for chimapnzees and bonobos
+CRHs #for humans
+CRBab #for baboons
+CRPan #for chimapnzees and bonobos
 
-zCR<-compare.CR(MTHs,MTPan,MTBab,CR.null=TRUE,two.tailed=TRUE)
-zCR
+Zcr<-compare.CR(MTHs,MTPan,MTBab,CR.null=TRUE,two.tailed=TRUE)
+Zcr
 
 ##MORPHO-STRUCUTRAL INTEGRATION (GMM data femur or GMM data pelvis vs CSG (Ix/Iy or Imax/Imin))
 
